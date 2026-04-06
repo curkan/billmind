@@ -6,6 +6,10 @@
 
 ![billmind](misc/billmind_ru.png)
 
+### Превью
+
+https://github.com/user-attachments/assets/157734d7-2410-4661-a08e-68ae1ffd8471
+
 ## Возможности
 
 - Управление подписками и разовыми платежами
