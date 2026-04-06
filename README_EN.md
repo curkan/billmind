@@ -4,6 +4,8 @@
 
 A terminal app for tracking subscriptions and recurring payments. Never forget to pay for your VPS, domain, Netflix, or anything else — right from your terminal.
 
+![billmind](misc/1.png)
+
 ## Features
 
 - Manage subscriptions and one-time payments
@@ -114,6 +116,24 @@ Creating a new reminder in 4 steps:
 2. **Schedule** — interval (weekly / monthly / yearly / custom / one-time), due date, remind days before
 3. **Notifications** — system notifications (macOS/Linux/Windows), ntfy.sh (push to phone)
 4. **Confirm** — summary, save
+
+<details>
+<summary>Wizard — creating a reminder</summary>
+
+![Wizard — creating](misc/2.png)
+</details>
+
+<details>
+<summary>Wizard — schedule</summary>
+
+![Wizard — schedule](misc/3.png)
+</details>
+
+<details>
+<summary>Notifications</summary>
+
+![Notifications](misc/4.png)
+</details>
 
 ## Notification system
 
