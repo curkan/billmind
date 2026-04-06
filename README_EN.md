@@ -333,6 +333,10 @@ Restore the latest backup:
 cp ~/.config/billmind/backups/data_LATEST.json ~/.config/billmind/data.json
 ```
 
+## Releases
+
+Instructions for publishing new versions — [RELEASING.md](RELEASING.md).
+
 ## License
 
 MIT License

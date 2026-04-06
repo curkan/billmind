@@ -1,3 +1,4 @@
+# AI
 .claude
 .agents
 CLAUDE.md
@@ -5,3 +6,16 @@ AGENTS.md
 GEMINI.md
 UX.md
 TECH_SPEC.md
+
+# Build
+billmind
+dist/
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

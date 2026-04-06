@@ -324,6 +324,10 @@ ls ~/.config/billmind/backups/
 cp ~/.config/billmind/backups/data_ПОСЛЕДНИЙ.json ~/.config/billmind/data.json
 ```
 
+## Релизы
+
+Инструкция по публикации новых версий — [RELEASING.md](RELEASING.md).
+
 ## Лицензия
 
 MIT License
