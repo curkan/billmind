@@ -24,6 +24,13 @@
 
 ## Установка
 
+### Homebrew (macOS / Linux)
+
+```bash
+brew tap curkan/public
+brew install billmind
+```
+
 ### Сборка из исходников
 
 ```bash
@@ -32,7 +39,11 @@ cd billmind
 go build -o billmind ./cmd/billmind
 ```
 
-### macOS — установка terminal-notifier
+### Скачать бинарник
+
+Готовые бинарники для всех платформ — на странице [Releases](https://github.com/curkan/billmind/releases).
+
+### macOS — установка terminal-notifier (рекомендуется)
 
 ```bash
 brew install terminal-notifier

@@ -25,6 +25,13 @@ A terminal app for tracking subscriptions and recurring payments. Never forget t
 
 ## Installation
 
+### Homebrew (macOS / Linux)
+
+```bash
+brew tap curkan/public
+brew install billmind
+```
+
 ### Build from source
 
 ```bash
@@ -33,7 +40,11 @@ cd billmind
 go build -o billmind ./cmd/billmind
 ```
 
-### macOS — install terminal-notifier
+### Download binary
+
+Pre-built binaries for all platforms are available on the [Releases](https://github.com/curkan/billmind/releases) page.
+
+### macOS — install terminal-notifier (recommended)
 
 ```bash
 brew install terminal-notifier
