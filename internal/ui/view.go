@@ -291,13 +291,22 @@ func (m Model) viewSettings() string {
 	dimmed := lipgloss.NewStyle().Faint(true).Render(listView)
 
 	currentLang := i18n.CurrentLang()
+	sectionLabel := lipgloss.NewStyle().Bold(true)
+	activeSectionLabel := sectionLabel.Foreground(colorAccent)
+	dimSectionLabel := sectionLabel.Foreground(colorHint)
 
 	var b strings.Builder
-	b.WriteString(styleAccent.Bold(true).Render(i18n.T("settings.language")) + "\n\n")
+
+	// Section 1: Language
+	if m.settingsSection == settingsSectionLang {
+		b.WriteString(activeSectionLabel.Render(i18n.T("settings.language")) + "\n\n")
+	} else {
+		b.WriteString(dimSectionLabel.Render(i18n.T("settings.language")) + "\n\n")
+	}
 
 	for idx, lang := range settingsLangs {
 		cursor := "  "
-		if idx == m.settingsCursor {
+		if m.settingsSection == settingsSectionLang && idx == m.settingsCursor {
 			cursor = "> "
 		}
 
@@ -317,9 +326,19 @@ func (m Model) viewSettings() string {
 		b.WriteString(cursor + label + "\n")
 	}
 
+	// Section 2: ntfy topic
+	b.WriteString("\n")
+	if m.settingsSection == settingsSectionNtfy {
+		b.WriteString(activeSectionLabel.Render(i18n.T("settings.ntfy_topic")) + "\n\n")
+	} else {
+		b.WriteString(dimSectionLabel.Render(i18n.T("settings.ntfy_topic")) + "\n\n")
+	}
+	b.WriteString("  " + m.ntfyTopicInput.View() + "\n")
+	b.WriteString("  " + styleHint.Render(i18n.T("settings.ntfy_hint")) + "\n")
+
 	b.WriteString("\n")
 	b.WriteString(formatKeyHelp(
-		"j/k", i18n.T("settings.navigate"),
+		"tab", i18n.T("settings.navigate"),
 		"space", i18n.T("settings.select"),
 		"esc", i18n.T("settings.close"),
 	))

@@ -20,8 +20,7 @@ const (
 	editFieldNextDue
 	editFieldRemindDays
 	editFieldNotifyMacOS
-	editFieldNotifyEmail
-	editFieldEmailAddr
+	editFieldNotifyNtfy
 )
 
 // EditState holds the state of the edit overlay form.
@@ -37,8 +36,7 @@ type EditState struct {
 	remindDays    int
 	remindInput   textinput.Model
 	notifyMacOS bool
-	notifyEmail bool
-	emailInput  textinput.Model
+	notifyNtfy  bool
 	focusIndex  int
 }
 
@@ -91,26 +89,20 @@ func newEditState(r *domain.Reminder) *EditState {
 	remindIn.CharLimit = 5
 	remindIn.SetWidth(10)
 
-	emailIn := textinput.New()
-	emailIn.Placeholder = "email@example.com"
-	emailIn.CharLimit = 100
-	emailIn.SetWidth(40)
-
 	return &EditState{
-		reminderID:  r.ID,
-		nameInput:   nameIn,
-		urlInput:    urlIn,
-		tagsInput:   tagsIn,
-		interval:    r.Interval,
+		reminderID:   r.ID,
+		nameInput:    nameIn,
+		urlInput:     urlIn,
+		tagsInput:    tagsIn,
+		interval:     r.Interval,
 		customDays:   r.CustomDays,
 		customInput:  customIn,
 		nextDueInput: nextDueIn,
 		remindDays:   r.RemindDaysBefore,
 		remindInput:  remindIn,
-		notifyMacOS: r.Notifications.MacOS,
-		notifyEmail: r.Notifications.Email,
-		emailInput:  emailIn,
-		focusIndex:  editFieldName,
+		notifyMacOS:  r.Notifications.MacOS,
+		notifyNtfy:   r.Notifications.Ntfy,
+		focusIndex:   editFieldName,
 	}
 }
 
@@ -136,12 +128,9 @@ func (e *EditState) cycleInterval(delta int) {
 // focusField blurs all inputs then focuses the one at focusIndex.
 // visibleFieldCount returns how many fields are currently visible.
 func (e *EditState) visibleFieldCount() int {
-	n := 8 // name, url, tags, interval, nextDue, remind, macOS, email toggle
+	n := 8 // name, url, tags, interval, nextDue, remind, macOS, ntfy toggle
 	if e.interval == domain.IntervalCustom {
 		n++ // custom days
-	}
-	if e.notifyEmail {
-		n++ // email address
 	}
 	return n
 }
@@ -153,7 +142,6 @@ func (e *EditState) focusField() {
 	e.customInput.Blur()
 	e.nextDueInput.Blur()
 	e.remindInput.Blur()
-	e.emailInput.Blur()
 
 	actual := e.actualField()
 	switch actual {
@@ -169,20 +157,15 @@ func (e *EditState) focusField() {
 		e.nextDueInput.Focus()
 	case editFieldRemindDays:
 		e.remindInput.Focus()
-	case editFieldEmailAddr:
-		e.emailInput.Focus()
 	}
 }
 
 // actualField maps focusIndex to the real field, skipping hidden fields.
 func (e *EditState) actualField() int {
 	idx := e.focusIndex
-	// Fields: name(0), url(1), tags(2), interval(3), [customDays(4)], remindDays, macOS, email, [emailAddr]
+	// Fields: name(0), url(1), tags(2), interval(3), [customDays(4)], nextDue, remindDays, macOS, ntfy
 	if e.interval != domain.IntervalCustom && idx >= editFieldCustomDays {
 		idx++ // skip customDays
-	}
-	if !e.notifyEmail && idx >= editFieldEmailAddr {
-		idx++ // skip emailAddr
 	}
 	return idx
 }
@@ -244,18 +227,14 @@ func (e *EditState) renderEditForm(width int) string {
 		macToggle = toggleOff.Render("[ ]")
 	}
 	b.WriteString(label(editFieldNotifyMacOS, i18n.T("wizard.macos_notify")+":") + " " + macToggle + "\n")
-	// Email notifications
-	var emailToggle string
-	if e.notifyEmail {
-		emailToggle = toggleOn.Render("[x]")
+	// ntfy notifications
+	var ntfyToggle string
+	if e.notifyNtfy {
+		ntfyToggle = toggleOn.Render("[x]")
 	} else {
-		emailToggle = toggleOff.Render("[ ]")
+		ntfyToggle = toggleOff.Render("[ ]")
 	}
-	b.WriteString(label(editFieldNotifyEmail, i18n.T("wizard.email_notify")+":") + " " + emailToggle + "\n")
-	// Email address (shown only if email notifications enabled)
-	if e.notifyEmail {
-		b.WriteString(label(editFieldEmailAddr, i18n.T("wizard.email")+":") + " " + e.emailInput.View() + "\n")
-	}
+	b.WriteString(label(editFieldNotifyNtfy, i18n.T("wizard.ntfy_notify")+":") + " " + ntfyToggle + "\n")
 
 	b.WriteString("\n")
 	b.WriteString(formatKeyHelp(

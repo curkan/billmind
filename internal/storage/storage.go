@@ -33,8 +33,10 @@ type dataFile struct {
 
 // Settings holds user-level configuration.
 type Settings struct {
-	Email    string `json:"email"`
-	Language string `json:"language"`
+	Language        string `json:"language"`
+	NtfyTopic       string `json:"ntfy_topic"`
+	QuietHoursStart int    `json:"quiet_hours_start"`
+	QuietHoursEnd   int    `json:"quiet_hours_end"`
 }
 
 // Storage manages persistence of reminders and settings to the file system.
@@ -159,10 +161,6 @@ func (s *Storage) SaveSettings(_ context.Context, settings Settings) error {
 		var existingDF dataFile
 		if json.Unmarshal(existing, &existingDF) == nil {
 			df.Reminders = existingDF.Reminders
-			// Merge: keep existing email if new settings don't have one
-			if settings.Email == "" && existingDF.Settings.Email != "" {
-				df.Settings.Email = existingDF.Settings.Email
-			}
 		}
 	}
 

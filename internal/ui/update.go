@@ -144,6 +144,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		} else {
 			i18n.SetLang(i18n.DetectSystemLang())
 		}
+		m.ntfyTopicInput.SetValue(msg.settings.NtfyTopic)
 		// Update table columns with translated headers
 		m.table.SetColumns(getTableColumns())
 		return m, nil
@@ -218,9 +219,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.edit.nextDueInput, cmd = m.edit.nextDueInput.Update(msg)
 		case editFieldRemindDays:
 			m.edit.remindInput, cmd = m.edit.remindInput.Update(msg)
-		case editFieldEmailAddr:
-			m.edit.emailInput, cmd = m.edit.emailInput.Update(msg)
 		}
+		return m, cmd
+	}
+
+	// Forward non-key messages to ntfy input when in settings
+	if m.viewMode == ViewSettings && m.settingsSection == settingsSectionNtfy {
+		var cmd tea.Cmd
+		m.ntfyTopicInput, cmd = m.ntfyTopicInput.Update(msg)
 		return m, cmd
 	}
 

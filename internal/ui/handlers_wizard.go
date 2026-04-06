@@ -51,9 +51,7 @@ func (m Model) updateWizardInputs(msg tea.Msg) tea.Cmd {
 			w.remindInput, cmd = w.remindInput.Update(msg)
 		}
 	case WizardStepNotifications:
-		if w.notifyEmail && w.focusIndex == 2 {
-			w.emailInput, cmd = w.emailInput.Update(msg)
-		}
+		// toggles only, no text input
 	}
 	return cmd
 }
@@ -150,7 +148,7 @@ func (m Model) handleWizardHorizontal(key string) (Model, tea.Cmd) {
 		case 0:
 			w.notifyMacOS = !w.notifyMacOS
 		case 1:
-			w.notifyEmail = !w.notifyEmail
+			w.notifyNtfy = !w.notifyNtfy
 		}
 		return m, nil
 	}
@@ -222,9 +220,7 @@ func (m Model) forwardToCurrentInput(msg tea.KeyPressMsg) (Model, tea.Cmd) {
 			w.remindInput, cmd = w.remindInput.Update(msg)
 		}
 	case WizardStepNotifications:
-		if w.notifyEmail && w.focusIndex == 2 {
-			w.emailInput, cmd = w.emailInput.Update(msg)
-		}
+		// toggles only, no text input
 	}
 
 	return m, cmd
@@ -283,9 +279,7 @@ func (m Model) wizardFocusField() tea.Cmd {
 			return w.remindInput.Focus()
 		}
 	case WizardStepNotifications:
-		if w.notifyEmail && w.focusIndex == 2 {
-			return w.emailInput.Focus()
-		}
+		// toggles only, no text input to focus
 	}
 	return nil
 }
@@ -297,7 +291,6 @@ func (w *WizardState) blurAll() {
 	w.customInput.Blur()
 	w.nextDueInput.Blur()
 	w.remindInput.Blur()
-	w.emailInput.Blur()
 }
 
 // isCurrentFieldTextInput returns true if the focused field is a text input.
@@ -312,7 +305,7 @@ func (w *WizardState) isCurrentFieldTextInput() bool {
 		}
 		return true // custom days or remind days
 	case WizardStepNotifications:
-		return w.focusIndex == 2 && w.notifyEmail // email input
+		return false // toggles only
 	case WizardStepConfirm:
 		return false
 	}

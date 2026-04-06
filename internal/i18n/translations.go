@@ -58,8 +58,7 @@ var translations = map[Lang]map[string]string{
 		"validation.invalid_date": "Неверный формат даты (ДД.ММ.ГГГГ)",
 		"wizard.days":             "дней",
 		"wizard.macos_notify":     "Уведомление macOS",
-		"wizard.email_notify":     "Email уведомление",
-		"wizard.email":            "Email",
+		"wizard.ntfy_notify":      "ntfy уведомление",
 		"wizard.on":               "вкл",
 		"wizard.off":              "выкл",
 		"wizard.toggle_hint":      "space переключить",
@@ -77,8 +76,7 @@ var translations = map[Lang]map[string]string{
 		"validation.invalid_url":    "Неверный формат URL (должен начинаться с http:// или https://)",
 		"validation.custom_days":    "Количество дней должно быть > 0",
 		"validation.remind_days":    "Дни напоминания должны быть >= 0",
-		"validation.email_required": "Введите корректный email",
-
+		
 		// Edit
 		"edit.title":      "Редактировать",
 		"edit.save":       "сохранить",
@@ -144,13 +142,15 @@ var translations = map[Lang]map[string]string{
 		"help_screen.settings":        "настройки",
 
 		// Settings
-		"settings.title":    "Настройки",
-		"settings.language": "Язык",
-		"settings.russian":  "Русский",
-		"settings.english":  "English",
-		"settings.close":    "закрыть",
-		"settings.select":   "выбрать",
-		"settings.navigate": "навигация",
+		"settings.title":      "Настройки",
+		"settings.language":   "Язык",
+		"settings.russian":    "Русский",
+		"settings.english":    "English",
+		"settings.ntfy_topic": "ntfy топик",
+		"settings.ntfy_hint":  "имя топика из ntfy.sh приложения",
+		"settings.close":      "закрыть",
+		"settings.select":     "выбрать",
+		"settings.navigate":   "навигация",
 	},
 	LangEn: {
 		// Help bar
@@ -209,8 +209,7 @@ var translations = map[Lang]map[string]string{
 		"validation.invalid_date": "Invalid date format (DD.MM.YYYY)",
 		"wizard.days":             "days",
 		"wizard.macos_notify":     "macOS notification",
-		"wizard.email_notify":     "Email notification",
-		"wizard.email":            "Email",
+		"wizard.ntfy_notify":      "ntfy notification",
 		"wizard.on":               "on",
 		"wizard.off":              "off",
 		"wizard.toggle_hint":      "space to toggle",
@@ -228,8 +227,7 @@ var translations = map[Lang]map[string]string{
 		"validation.invalid_url":    "Invalid URL format (must start with http:// or https://)",
 		"validation.custom_days":    "Custom days must be > 0",
 		"validation.remind_days":    "Remind days must be >= 0",
-		"validation.email_required": "Valid email is required",
-
+		
 		// Edit
 		"edit.title":      "Edit",
 		"edit.save":       "save",
@@ -295,12 +293,14 @@ var translations = map[Lang]map[string]string{
 		"help_screen.settings":        "settings",
 
 		// Settings
-		"settings.title":    "Settings",
-		"settings.language": "Language",
-		"settings.russian":  "Русский",
-		"settings.english":  "English",
-		"settings.close":    "close",
-		"settings.select":   "select",
-		"settings.navigate": "navigate",
+		"settings.title":      "Settings",
+		"settings.language":   "Language",
+		"settings.russian":    "Русский",
+		"settings.english":    "English",
+		"settings.ntfy_topic": "ntfy topic",
+		"settings.ntfy_hint":  "topic name from ntfy.sh app",
+		"settings.close":      "close",
+		"settings.select":     "select",
+		"settings.navigate":   "navigate",
 	},
 }

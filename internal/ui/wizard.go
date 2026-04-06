@@ -19,7 +19,7 @@ type WizardStep int
 const (
 	WizardStepInfo          WizardStep = iota // Name, URL, Tags
 	WizardStepSchedule                        // Recurring/Once, Interval, Remind days
-	WizardStepNotifications                   // macOS, Email toggles
+	WizardStepNotifications                   // macOS, ntfy toggles
 	WizardStepConfirm                         // Read-only summary
 )
 
@@ -54,8 +54,7 @@ type WizardState struct {
 
 	// Step 3 -- Notifications
 	notifyMacOS bool
-	notifyEmail bool
-	emailInput  textinput.Model
+	notifyNtfy  bool
 
 	// Per-step focused field index
 	focusIndex int
@@ -98,11 +97,6 @@ func newWizardState(existingTags []string) *WizardState {
 	remindIn.CharLimit = 3
 	remindIn.SetWidth(10)
 
-	emailIn := textinput.New()
-	emailIn.Placeholder = "user@example.com"
-	emailIn.CharLimit = 120
-	emailIn.SetWidth(40)
-
 	_ = existingTags // reserved for future autocomplete
 
 	return &WizardState{
@@ -119,8 +113,7 @@ func newWizardState(existingTags []string) *WizardState {
 		remindDays:     3,
 		remindInput:    remindIn,
 		notifyMacOS:    true,
-		notifyEmail:    false,
-		emailInput:     emailIn,
+		notifyNtfy:     false,
 		focusIndex:     0,
 	}
 }
@@ -140,11 +133,7 @@ func (w *WizardState) stepFieldCount() int {
 		}
 		return n
 	case WizardStepNotifications:
-		n := 2 // macOS toggle, email toggle
-		if w.notifyEmail {
-			n++ // email input
-		}
-		return n
+		return 2 // macOS toggle, ntfy toggle
 	case WizardStepConfirm:
 		return 0
 	}
@@ -182,12 +171,7 @@ func (w *WizardState) validateCurrentStep() string {
 			return i18n.T("validation.remind_days")
 		}
 	case WizardStepNotifications:
-		if w.notifyEmail {
-			email := strings.TrimSpace(w.emailInput.Value())
-			if email == "" || !strings.Contains(email, "@") {
-				return i18n.T("validation.email_required")
-			}
-		}
+		// no validation needed for toggles
 	}
 	return ""
 }
@@ -247,7 +231,7 @@ func (w *WizardState) buildReminder() domain.Reminder {
 
 	r.RemindDaysBefore = w.remindDays
 	r.Notifications.MacOS = w.notifyMacOS
-	r.Notifications.Email = w.notifyEmail
+	r.Notifications.Ntfy = w.notifyNtfy
 
 	return r
 }
@@ -327,12 +311,7 @@ func renderWizard(w *WizardState, width, height int) string {
 	case WizardStepNotifications:
 		b.WriteString(renderToggleLine(i18n.T("wizard.macos_notify"), w.focusIndex == 0, w.notifyMacOS, i18n.T("wizard.on"), i18n.T("wizard.off")))
 		b.WriteString("\n")
-		b.WriteString(renderToggleLine(i18n.T("wizard.email_notify"), w.focusIndex == 1, w.notifyEmail, i18n.T("wizard.on"), i18n.T("wizard.off")))
-
-		if w.notifyEmail {
-			b.WriteString("\n")
-			b.WriteString(renderField(i18n.T("wizard.email"), w.emailInput.View(), w.focusIndex == 2, false))
-		}
+		b.WriteString(renderToggleLine(i18n.T("wizard.ntfy_notify"), w.focusIndex == 1, w.notifyNtfy, i18n.T("wizard.on"), i18n.T("wizard.off")))
 
 	case WizardStepConfirm:
 		b.WriteString(renderSummary(w))
@@ -479,11 +458,11 @@ func renderSummary(w *WizardState) string {
 	}
 	summaryLine(i18n.T("wizard.macos_notify"), macOS)
 
-	email := i18n.T("wizard.off")
-	if w.notifyEmail {
-		email = i18n.T("wizard.on") + " (" + strings.TrimSpace(w.emailInput.Value()) + ")"
+	ntfyStatus := i18n.T("wizard.off")
+	if w.notifyNtfy {
+		ntfyStatus = i18n.T("wizard.on")
 	}
-	summaryLine(i18n.T("wizard.email_notify"), email)
+	summaryLine(i18n.T("wizard.ntfy_notify"), ntfyStatus)
 
 	return b.String()
 }

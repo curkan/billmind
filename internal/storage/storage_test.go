@@ -32,7 +32,7 @@ func sampleReminders() []domain.Reminder {
 			Interval:         domain.IntervalMonthly,
 			NextDue:          now.Add(7 * 24 * time.Hour),
 			RemindDaysBefore: 3,
-			Notifications:    domain.Notifications{MacOS: true, Email: false},
+			Notifications:    domain.Notifications{MacOS: true, Ntfy: false},
 			PaidAt:           nil,
 		},
 		{
@@ -43,7 +43,7 @@ func sampleReminders() []domain.Reminder {
 			Interval:         domain.IntervalMonthly,
 			NextDue:          now.Add(14 * 24 * time.Hour),
 			RemindDaysBefore: 5,
-			Notifications:    domain.Notifications{MacOS: true, Email: true},
+			Notifications:    domain.Notifications{MacOS: true, Ntfy: true},
 			PaidAt:           nil,
 		},
 	}

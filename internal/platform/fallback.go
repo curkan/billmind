@@ -3,6 +3,8 @@ package platform
 import (
 	"context"
 	"fmt"
+
+	"github.com/pkg/browser"
 )
 
 type fallbackPlatform struct{}
@@ -12,11 +14,11 @@ func newFallbackPlatform() *fallbackPlatform {
 }
 
 func (p *fallbackPlatform) OpenURL(_ context.Context, url string) error {
-	return fmt.Errorf("cannot open URL: no browser handler available, visit manually: %s", url)
+	return browser.OpenURL(url)
 }
 
 func (p *fallbackPlatform) SendNotification(_ context.Context, _, _ string) error {
-	return nil
+	return nil // silent noop
 }
 
 func (p *fallbackPlatform) Scheduler() Scheduler {

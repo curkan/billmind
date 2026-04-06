@@ -95,6 +95,8 @@ func (m Model) handleListKeys(msg tea.KeyPressMsg) (Model, tea.Cmd) {
 	case "s":
 		m.viewMode = ViewSettings
 		m.settingsCursor = 0
+		m.settingsSection = settingsSectionLang
+		m.ntfyTopicInput.Blur()
 		return m, nil
 
 	case "esc":
@@ -177,6 +179,7 @@ func (m Model) confirmPaid() (Model, tea.Cmd) {
 	nextDue := calcNextDue(selected.NextDue, selected.Interval, selected.CustomDays)
 	selected.NextDue = nextDue
 	selected.PaidAt = nil // reset paid status
+	selected.ResetNotifyStage()
 
 	m.sortReminders()
 	m.updateListItems()

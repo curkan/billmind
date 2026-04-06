@@ -51,7 +51,9 @@ type Model struct {
 	edit *EditState
 
 	// Settings
-	settingsCursor int
+	settingsCursor   int
+	settingsSection  int // 0 = language, 1 = ntfy topic
+	ntfyTopicInput   textinput.Model
 
 	// Pending keys (vim-style combos)
 	gPending bool
@@ -102,12 +104,18 @@ func New(store *storage.Storage, plat platform.Platform) Model {
 	si.Prompt = "/ "
 	si.CharLimit = 100
 
+	ntfyIn := textinput.New()
+	ntfyIn.Placeholder = "billmind-myname123"
+	ntfyIn.CharLimit = 100
+	ntfyIn.SetWidth(30)
+
 	return Model{
-		viewMode:    ViewList,
-		table:       tw,
-		storage:     store,
-		platform:    plat,
-		searchInput: si,
+		viewMode:       ViewList,
+		table:          tw,
+		storage:        store,
+		platform:       plat,
+		searchInput:    si,
+		ntfyTopicInput: ntfyIn,
 	}
 }
 

@@ -225,6 +225,120 @@ func TestIsPaid(t *testing.T) {
 	}
 }
 
+func ptr(t time.Time) *time.Time { return &t }
+
+func TestShouldNotify(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name      string
+		reminder  Reminder
+		now       time.Time
+		wantStage NotifyStage
+	}{
+		{
+			name: "paid reminder returns none",
+			reminder: Reminder{
+				NextDue:          time.Date(2026, 4, 10, 0, 0, 0, 0, time.UTC),
+				PaidAt:           ptr(time.Date(2026, 4, 5, 0, 0, 0, 0, time.UTC)),
+				RemindDaysBefore: 3,
+			},
+			now:       time.Date(2026, 4, 8, 12, 0, 0, 0, time.UTC),
+			wantStage: NotifyNone,
+		},
+		{
+			name: "soft stage fires within remind window",
+			reminder: Reminder{
+				NextDue:          time.Date(2026, 4, 10, 0, 0, 0, 0, time.UTC),
+				RemindDaysBefore: 3,
+				NotifyStage:      NotifyNone,
+			},
+			now:       time.Date(2026, 4, 7, 12, 0, 0, 0, time.UTC),
+			wantStage: NotifySoft,
+		},
+		{
+			name: "soft already sent returns none",
+			reminder: Reminder{
+				NextDue:          time.Date(2026, 4, 10, 0, 0, 0, 0, time.UTC),
+				RemindDaysBefore: 3,
+				NotifyStage:      NotifySoft,
+			},
+			now:       time.Date(2026, 4, 8, 12, 0, 0, 0, time.UTC),
+			wantStage: NotifyNone,
+		},
+		{
+			name: "urgent on due day",
+			reminder: Reminder{
+				NextDue:          time.Date(2026, 4, 10, 0, 0, 0, 0, time.UTC),
+				RemindDaysBefore: 3,
+				NotifyStage:      NotifySoft,
+			},
+			now:       time.Date(2026, 4, 10, 12, 0, 0, 0, time.UTC),
+			wantStage: NotifyUrgent,
+		},
+		{
+			name: "critical when overdue",
+			reminder: Reminder{
+				NextDue:          time.Date(2026, 4, 10, 0, 0, 0, 0, time.UTC),
+				RemindDaysBefore: 3,
+				NotifyStage:      NotifyUrgent,
+			},
+			now:       time.Date(2026, 4, 11, 12, 0, 0, 0, time.UTC),
+			wantStage: NotifyCritical,
+		},
+		{
+			name: "catch-up skips to critical after long sleep",
+			reminder: Reminder{
+				NextDue:          time.Date(2026, 4, 10, 0, 0, 0, 0, time.UTC),
+				RemindDaysBefore: 3,
+				NotifyStage:      NotifyNone,
+			},
+			now:       time.Date(2026, 4, 15, 12, 0, 0, 0, time.UTC),
+			wantStage: NotifyCritical,
+		},
+		{
+			name: "too early returns none",
+			reminder: Reminder{
+				NextDue:          time.Date(2026, 4, 10, 0, 0, 0, 0, time.UTC),
+				RemindDaysBefore: 3,
+				NotifyStage:      NotifyNone,
+			},
+			now:       time.Date(2026, 4, 1, 12, 0, 0, 0, time.UTC),
+			wantStage: NotifyNone,
+		},
+		{
+			name: "all stages exhausted returns none",
+			reminder: Reminder{
+				NextDue:          time.Date(2026, 4, 10, 0, 0, 0, 0, time.UTC),
+				RemindDaysBefore: 3,
+				NotifyStage:      NotifyCritical,
+			},
+			now:       time.Date(2026, 4, 20, 12, 0, 0, 0, time.UTC),
+			wantStage: NotifyNone,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := tt.reminder.ShouldNotify(tt.now)
+			if got != tt.wantStage {
+				t.Errorf("ShouldNotify() = %v, want %v", got, tt.wantStage)
+			}
+		})
+	}
+}
+
+func TestResetNotifyStage(t *testing.T) {
+	t.Parallel()
+
+	r := Reminder{NotifyStage: NotifyCritical}
+	r.ResetNotifyStage()
+	if r.NotifyStage != NotifyNone {
+		t.Errorf("ResetNotifyStage() stage = %v, want %v", r.NotifyStage, NotifyNone)
+	}
+}
+
 func TestNewReminder(t *testing.T) {
 	t.Parallel()
 

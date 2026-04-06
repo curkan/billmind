@@ -50,9 +50,31 @@ func (i Interval) String() string {
 	return string(i)
 }
 
+type NotifyStage int
+
+const (
+	NotifyNone     NotifyStage = 0
+	NotifySoft     NotifyStage = 1
+	NotifyUrgent   NotifyStage = 2
+	NotifyCritical NotifyStage = 3
+)
+
+func (s NotifyStage) String() string {
+	switch s {
+	case NotifySoft:
+		return "soft"
+	case NotifyUrgent:
+		return "urgent"
+	case NotifyCritical:
+		return "critical"
+	default:
+		return "none"
+	}
+}
+
 type Notifications struct {
 	MacOS bool `json:"macos"`
-	Email bool `json:"email"`
+	Ntfy  bool `json:"ntfy"`
 }
 
 type Reminder struct {
@@ -65,6 +87,7 @@ type Reminder struct {
 	NextDue          time.Time     `json:"next_due"`
 	RemindDaysBefore int           `json:"remind_days_before"`
 	Notifications    Notifications `json:"notifications"`
+	NotifyStage      NotifyStage   `json:"notify_stage"`
 	PaidAt           *time.Time    `json:"paid_at"`
 }
 
@@ -98,8 +121,36 @@ func (r Reminder) IsPaid() bool {
 }
 
 func (r Reminder) DaysUntilDue() int {
-	now := time.Now().Truncate(24 * time.Hour)
+	return r.daysUntilDueFrom(time.Now())
+}
+
+func (r Reminder) daysUntilDueFrom(now time.Time) int {
+	today := now.Truncate(24 * time.Hour)
 	due := r.NextDue.Truncate(24 * time.Hour)
-	d := int(due.Sub(now).Hours() / 24)
-	return d
+	return int(due.Sub(today).Hours() / 24)
+}
+
+// ShouldNotify returns the notification stage that should fire,
+// or NotifyNone if no notification is needed.
+func (r Reminder) ShouldNotify(now time.Time) NotifyStage {
+	if r.IsPaid() {
+		return NotifyNone
+	}
+
+	days := r.daysUntilDueFrom(now)
+
+	switch {
+	case days < 0 && r.NotifyStage < NotifyCritical:
+		return NotifyCritical
+	case days == 0 && r.NotifyStage < NotifyUrgent:
+		return NotifyUrgent
+	case days >= 0 && days <= r.RemindDaysBefore && r.NotifyStage < NotifySoft:
+		return NotifySoft
+	default:
+		return NotifyNone
+	}
+}
+
+func (r *Reminder) ResetNotifyStage() {
+	r.NotifyStage = NotifyNone
 }

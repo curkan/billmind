@@ -65,9 +65,9 @@ func (m Model) handleEditKeys(msg tea.KeyPressMsg) (Model, tea.Cmd) {
 		}
 		return m, nil
 
-	case editFieldNotifyEmail:
+	case editFieldNotifyNtfy:
 		if msg.String() == "space" || msg.String() == "h" || msg.String() == "l" || msg.String() == "left" || msg.String() == "right" {
-			m.edit.notifyEmail = !m.edit.notifyEmail
+			m.edit.notifyNtfy = !m.edit.notifyNtfy
 		}
 		return m, nil
 
@@ -101,10 +101,6 @@ func (m Model) handleEditKeys(msg tea.KeyPressMsg) (Model, tea.Cmd) {
 		m.edit.remindInput, cmd = m.edit.remindInput.Update(msg)
 		return m, cmd
 
-	case editFieldEmailAddr:
-		var cmd tea.Cmd
-		m.edit.emailInput, cmd = m.edit.emailInput.Update(msg)
-		return m, cmd
 	}
 
 	return m, nil
@@ -152,7 +148,10 @@ func (m Model) saveEdit() (Model, tea.Cmd) {
 	// Parse next due date
 	dateStr := strings.TrimSpace(m.edit.nextDueInput.Value())
 	if parsed, err := time.Parse("02.01.2006", dateStr); err == nil {
-		m.reminders[idx].NextDue = parsed
+		if !parsed.Equal(m.reminders[idx].NextDue) {
+			m.reminders[idx].NextDue = parsed
+			m.reminders[idx].ResetNotifyStage()
+		}
 	}
 
 	if days, err := strconv.Atoi(m.edit.remindInput.Value()); err == nil && days >= 0 {
@@ -160,7 +159,7 @@ func (m Model) saveEdit() (Model, tea.Cmd) {
 	}
 
 	m.reminders[idx].Notifications.MacOS = m.edit.notifyMacOS
-	m.reminders[idx].Notifications.Email = m.edit.notifyEmail
+	m.reminders[idx].Notifications.Ntfy = m.edit.notifyNtfy
 
 	name := m.reminders[idx].Name
 
