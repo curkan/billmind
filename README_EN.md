@@ -4,7 +4,7 @@
 
 A terminal app for tracking subscriptions and recurring payments. Never forget to pay for your VPS, domain, Netflix, or anything else — right from your terminal.
 
-![billmind](misc/1.png)
+![billmind](misc/billmind_en.png)
 
 ## Features
 
